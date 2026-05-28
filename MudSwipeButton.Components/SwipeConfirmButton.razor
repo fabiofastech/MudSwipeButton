@@ -1,0 +1,120 @@
+@using Microsoft.JSInterop
+@using MudBlazor
+@implements IAsyncDisposable
+
+<div class="swipe-outer" style="width: @Width; --swipe-track-color: @(_state == SwipeState.Confirmed ? (ConfirmedTrackColor ?? TrackColor) : TrackColor)">
+    <div class="swipe-track @(_state == SwipeState.Confirmed ? "swipe-track--confirmed" : "") @(Disabled ? "swipe-track--disabled" : "")"
+         @ref="_trackRef">
+
+        @if (_state != SwipeState.Confirmed)
+        {
+            <span class="swipe-arrows" aria-hidden="true">›  ›  ›</span>
+            <span class="swipe-label">@Label</span>
+        }
+        else
+        {
+            <span class="swipe-label swipe-label--confirmed">@ConfirmedLabel</span>
+        }
+
+        <div class="swipe-thumb @(_state == SwipeState.Confirmed ? "swipe-thumb--confirmed" : "")"
+             @ref="_thumbRef">
+            <MudIcon Icon="@(_state == SwipeState.Confirmed ? ConfirmedIcon : Icon)"
+                     Style="color: white; font-size: 26px;" />
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>Text shown on the track before swiping.</summary>
+    [Parameter] public string Label { get; set; } = "Scorri per rispondere";
+
+    /// <summary>Text shown after a successful swipe.</summary>
+    [Parameter] public string ConfirmedLabel { get; set; } = "In chiamata…";
+
+    /// <summary>MudBlazor icon for the thumb (e.g. Icons.Material.Filled.Phone).</summary>
+    [Parameter] public string Icon { get; set; } = Icons.Material.Filled.Phone;
+
+    /// <summary>MudBlazor icon shown in the thumb after a successful swipe.</summary>
+    [Parameter] public string ConfirmedIcon { get; set; } = Icons.Material.Filled.Check;
+
+    /// <summary>CSS color for the track background (default: green).</summary>
+    [Parameter] public string TrackColor { get; set; } = "#2E7D32";
+
+    /// <summary>CSS color for the track background after a successful swipe. Defaults to TrackColor if not set.</summary>
+    [Parameter] public string? ConfirmedTrackColor { get; set; }
+
+    /// <summary>Percentage (0-100) the thumb must reach to trigger confirmation.</summary>
+    [Parameter] public int ThresholdPercent { get; set; } = 75;
+
+    /// <summary>Fired when the user completes the swipe.</summary>
+    [Parameter] public EventCallback OnConfirmed { get; set; }
+
+    /// <summary>Width of the component (CSS value, e.g. "300px", "100%").</summary>
+    [Parameter] public string Width { get; set; } = "300px";
+
+    /// <summary>When true, the component cannot be interacted with.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>When true, resets to idle state after OnConfirmed fires.</summary>
+    [Parameter] public bool ResetAfterConfirm { get; set; }
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    private ElementReference _trackRef;
+    private ElementReference _thumbRef;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<SwipeConfirmButton>? _dotNetRef;
+
+    private enum SwipeState { Idle, Confirmed }
+    private SwipeState _state = SwipeState.Idle;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !Disabled)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/MudSwipeButton.Components/js/swipebutton.js");
+            await _jsModule.InvokeVoidAsync("init", _dotNetRef, _trackRef, _thumbRef, ThresholdPercent);
+        }
+    }
+
+    [JSInvokable]
+    public async Task JsSwipeCompleted()
+    {
+        _state = SwipeState.Confirmed;
+        StateHasChanged();
+        await OnConfirmed.InvokeAsync();
+
+        if (ResetAfterConfirm)
+        {
+            await Task.Delay(1200);
+            await ResetAsync();
+        }
+    }
+
+    [JSInvokable]
+    public void JsSwipeCancelled()
+    {
+        // thumb already snapped back in JS; nothing to do in .NET
+    }
+
+    /// <summary>Programmatically resets the component to idle state.</summary>
+    public async Task ResetAsync()
+    {
+        _state = SwipeState.Idle;
+        StateHasChanged();
+        if (_jsModule != null)
+            await _jsModule.InvokeVoidAsync("reset", _trackRef, _thumbRef);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null)
+        {
+            try { await _jsModule.InvokeVoidAsync("dispose", _thumbRef); } catch { }
+            await _jsModule.DisposeAsync();
+        }
+        _dotNetRef?.Dispose();
+    }
+}

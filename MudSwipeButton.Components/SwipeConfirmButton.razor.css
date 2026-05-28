@@ -1,0 +1,89 @@
+/* SwipeConfirmButton isolated styles */
+
+.swipe-outer {
+    display: inline-flex;
+    align-items: center;
+}
+
+.swipe-track {
+    position: relative;
+    width: 100%;
+    height: 64px;
+    background: var(--swipe-track-color, #2E7D32);
+    border-radius: 32px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    cursor: default;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+.swipe-track--confirmed {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.swipe-track--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Chevron decoration */
+.swipe-arrows {
+    position: absolute;
+    right: 18px;
+    font-size: 18px;
+    letter-spacing: 5px;
+    color: rgba(255, 255, 255, 0.35);
+    pointer-events: none;
+    user-select: none;
+}
+
+.swipe-label {
+    position: relative;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.92);
+    pointer-events: none;
+    letter-spacing: 0.4px;
+    padding-left: 52px;
+    z-index: 1;
+    white-space: nowrap;
+}
+
+.swipe-label--confirmed {
+    padding-left: 0;
+    text-align: center;
+    width: 100%;
+}
+
+.swipe-thumb {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+    z-index: 2;
+    border: 1.5px solid rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.swipe-thumb:active {
+    cursor: grabbing;
+}
+
+.swipe-thumb--confirmed {
+    cursor: default;
+    background: rgba(255, 255, 255, 0.30);
+}

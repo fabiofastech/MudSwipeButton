@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="MudSwipeButton/MudSwipeButton.Client/MudSwipeButton.Client.csproj" />
+  <Project Path="MudSwipeButton/MudSwipeButton/MudSwipeButton.csproj" />
+  <Project Path="MudSwipeButton.Components/MudSwipeButton.Components.csproj" />
+</Solution>

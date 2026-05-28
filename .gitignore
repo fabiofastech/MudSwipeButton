@@ -1,0 +1,23 @@
+## .NET / Blazor
+obj/
+bin/
+*.user
+*.suo
+.vs/
+
+## NuGet
+*.nupkg
+packages/
+project.lock.json
+
+## Publish output
+publish/
+wwwroot/appsettings*.json
+
+## OS
+.DS_Store
+Thumbs.db
+
+## IDE
+.idea/
+*.swp

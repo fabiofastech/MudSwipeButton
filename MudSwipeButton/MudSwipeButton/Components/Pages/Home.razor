@@ -1,0 +1,66 @@
+@* Questa pagina è gestita dal progetto Client (WASM). Vedere MudSwipeButton.Client/Pages/Home.razor *@
+
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+
+    <MudText Typo="Typo.h5" Class="mb-6" Align="Align.Center">
+        SwipeConfirmButton Demo
+    </MudText>
+
+    <MudStack Spacing="6" AlignItems="AlignItems.Center">
+
+        @* Risposta chiamata (verde) *@
+        <MudStack Spacing="1" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.overline" Color="Color.Secondary">Risposta chiamata</MudText>
+            <SwipeConfirmButton
+                Label="Scorri per rispondere"
+                ConfirmedLabel="In chiamata…"
+                Icon="@Icons.Material.Filled.Phone"
+                TrackColor="#2E7D32"
+                OnConfirmed="OnAnswered"
+                ResetAfterConfirm="true"
+                Width="300px" />
+        </MudStack>
+
+        @* Rifiuta chiamata (rosso) *@
+        <MudStack Spacing="1" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.overline" Color="Color.Secondary">Rifiuta chiamata</MudText>
+            <SwipeConfirmButton
+                Label="Scorri per rifiutare"
+                ConfirmedLabel="Chiamata rifiutata"
+                Icon="@Icons.Material.Filled.PhoneDisabled"
+                TrackColor="#C62828"
+                OnConfirmed="OnRejected"
+                ResetAfterConfirm="true"
+                Width="300px" />
+        </MudStack>
+
+        @* Conferma azione (blu) *@
+        <MudStack Spacing="1" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.overline" Color="Color.Secondary">Conferma azione</MudText>
+            <SwipeConfirmButton
+                Label="Scorri per confermare"
+                ConfirmedLabel="Confermato ✓"
+                Icon="@Icons.Material.Filled.CheckCircle"
+                TrackColor="#1565C0"
+                OnConfirmed="OnConfirmed"
+                Width="300px" />
+        </MudStack>
+
+        @if (!string.IsNullOrEmpty(_lastEvent))
+        {
+            <MudAlert Severity="Severity.Info" Dense="true" Class="mt-2">@_lastEvent</MudAlert>
+        }
+
+    </MudStack>
+
+</MudContainer>
+
+@code {
+    private string _lastEvent = string.Empty;
+
+    private void OnAnswered() => _lastEvent = $"✅ Chiamata risposta alle {DateTime.Now:HH:mm:ss}";
+    private void OnRejected() => _lastEvent = $"❌ Chiamata rifiutata alle {DateTime.Now:HH:mm:ss}";
+    private void OnConfirmed() => _lastEvent = $"☑️ Azione confermata alle {DateTime.Now:HH:mm:ss}";
+}
+
