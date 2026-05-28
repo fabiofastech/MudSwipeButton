@@ -49,6 +49,20 @@
                 Width="300px" />
         </MudStack>
 
+        @* Invia / Avanza (azzurro → spunta) *@
+        <MudStack Spacing="1" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.overline" Color="Color.Secondary">Invia</MudText>
+            <SwipeConfirmButton
+                Label="Scorri per inviare"
+                ConfirmedLabel="Inviato ✓"
+                Icon="@Icons.Material.Filled.ArrowForward"
+                ConfirmedIcon="@Icons.Material.Filled.Done"
+                TrackColor="#0288D1"
+                ConfirmedTrackColor="#00796B"
+                OnConfirmed="OnSent"
+                Width="300px" />
+        </MudStack>
+
         @if (!string.IsNullOrEmpty(_lastEvent))
         {
             <MudAlert Severity="Severity.Info" Dense="true" Class="mt-2">@_lastEvent</MudAlert>
@@ -64,4 +78,5 @@
     private void OnAnswered() => _lastEvent = $"✅ Chiamata risposta alle {DateTime.Now:HH:mm:ss}";
     private void OnRejected() => _lastEvent = $"❌ Chiamata rifiutata alle {DateTime.Now:HH:mm:ss}";
     private void OnConfirmed() => _lastEvent = $"☑️ Azione confermata alle {DateTime.Now:HH:mm:ss}";
+    private void OnSent() => _lastEvent = $"📤 Inviato alle {DateTime.Now:HH:mm:ss}";
 }
